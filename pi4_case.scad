@@ -26,6 +26,7 @@ mountHole2_l = [brd_d[0]/2-3.5-58, brd_d[1]/2-3.5];
 
 //USB and Network Ports
 ports_d = [0, 53, 15.1];
+portsPwr_d = [47.5+3, 11.5, 6];
 
 //hifi berry dimensions
 //RCA Jacks
@@ -34,16 +35,11 @@ hifiRCA_d = [29, 9.5,11];
 //header dimensions
 header_d = [51, 6, 8.5];
 
-//color("red") {
-//    faceA(caseSize, finger, finger, material, 0);
-//}
-//lid/bottom
-//color("green") {
-//    faceB(caseSize, finger, finger, material, 0);
-//}
-//color("blue") {
-//    faceC(caseSize, finger, finger, material);
-//}
+
+module slots(slotD, area) {
+    
+}
+
 
 module base() {
     union() {
@@ -51,18 +47,25 @@ module base() {
             $fn = 36;
             faceB(caseSize, finger, finger, material, 0);
             // add mounting holes
+            mounting_holes();
+            /*
             for (j = [-1, 1]) {
                 translate([-1*mountHole1_l[0], j*mountHole1_l[1]])
                     circle(r=mountingHole/2);
                 translate([-1*mountHole2_l[0], j*mountHole2_l[1]])
                     circle(r=mountingHole/2);
             }
+            */
        }
        //no fingers needed here for sd card slot
        translate([-caseSize[0]/2+material/2, 0])
         square([material, finger*3], center=true);
+       
+       translate([caseSize[0]/2-material/2, 0, 0])
+        square([material, finger*17], center=true);
    }
 }
+
 
 module left() {
     difference() {
@@ -81,18 +84,19 @@ module right() {
         // cut hole for usb, network port access
 //        translate([0, -caseSize[2]/2+ports_d[2]/2+material/2, 0])
         translate([0, -(caseSize[2]-ports_d[2]-material-sdCard_d[2])/2, 0])
-            #square([finger*17, ports_d[2]+material+sdCard_d[2]], center=true);
+            square([finger*17, ports_d[2]+material+sdCard_d[2]], center=true);
     }
     
 }
 
-//right();
 
 module front() {
     difference() {
         faceA(caseSize, finger, finger, material, 0);
         translate([0, caseSize[2]/2-hifiRCA_d[2]/2-material/2])
-            #square([finger*9, hifiRCA_d[2]+material], center=true);
+            square([finger*9, hifiRCA_d[2]+material], center=true);
+        translate([-brd_d[0]/2+portsPwr_d[0]/2+6, -caseSize[2]/2+portsPwr_d[2]/2+material+sdCard_d[2]+brd_d[2], 0])
+            square([portsPwr_d[0], portsPwr_d[2]], center=true);
     }
 }
 
@@ -105,14 +109,28 @@ module back() {
 }
 
 module lid() {
-    difference() {
-        faceB(caseSize, finger, finger, material, 0);
-        translate([-brd_d[0]/2+header_d[0]/2+7, brd_d[1]/2-header_d[1]*1.5, 0])
-            square([header_d[0], header_d[1]], center=true);
+    union() {
+        difference() {
+            faceB(caseSize, finger, finger, material, 0);
+            translate([-brd_d[0]/2+header_d[0]/2+7, brd_d[1]/2-header_d[1]*1.5, 0])
+                square([header_d[0], header_d[1]], center=true);
+            mounting_holes();
+        }
+        translate([0, -caseSize[1]/2+material/2, 0])
+            square([finger*9, material], center=true);
     }
 }
 
 
+module mounting_holes() {
+    $fn=36;
+    for (j = [-1, 1]) {
+        translate([-1*mountHole1_l[0], j*mountHole1_l[1]])
+            circle(r=mountingHole/2);
+        translate([-1*mountHole2_l[0], j*mountHole2_l[1]])
+            circle(r=mountingHole/2);
+    }
+}
 
 module layout(threeD=true) {
   if (threeD) {
