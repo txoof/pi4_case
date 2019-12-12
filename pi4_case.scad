@@ -6,8 +6,8 @@ use <raspberrypi.scad>
 
 material = 2.3;
 over = 0.5;
-finger = 5;
-piSize = [85, 56.3, 27.2];
+finger = 3;
+piSize = [85, 56, 27.2];
 // add the overage materail thickness to the measured pi sizes
 caseSize = [ for (a = piSize) a + over+2 + material*2 ];
 
@@ -25,11 +25,14 @@ mountHole1_l = [brd_d[0]/2-3.5, brd_d[1]/2-3.5];
 mountHole2_l = [brd_d[0]/2-3.5-58, brd_d[1]/2-3.5];
 
 //USB and Network Ports
-ports_d = [0, 53, 17];
+ports_d = [0, 53, 15.1];
 
 //hifi berry dimensions
 //RCA Jacks
-hifiRCA_d = [29, 9.5,14.2];
+hifiRCA_d = [29, 9.5,11];
+
+//header dimensions
+header_d = [51, 6, 8.5];
 
 //color("red") {
 //    faceA(caseSize, finger, finger, material, 0);
@@ -63,12 +66,12 @@ module base() {
 
 module left() {
     difference() {
-        zMult = 4; // z height multiplyer for the sd card size
+        zMult = 2; // z height multiplyer for the sd card size
         echo("SD Card Slot height: ", sdCard_d[2]*zMult);
         faceC(caseSize, finger, finger, material);
         // remove a slot for sd card access
         translate([0, -caseSize[2]/2 + (sdCard_d[2]*zMult + material)/2 , 0])
-            square([finger*3, sdCard_d[2]*zMult + material], center=true);
+            square([finger*5, sdCard_d[2]*zMult + material], center=true);
     }
 }
 
@@ -76,25 +79,40 @@ module right() {
     difference() {
         faceC(caseSize, finger, finger, material);
         // cut hole for usb, network port access
-        //FIXME - this should be based on PI SIZE not CASE SIZE
-        translate([0, -caseSize[2]/2+ports_d[2]/2+material/2, 0])
-            square([ports_d[1], ports_d[2]+material], center=true);
+//        translate([0, -caseSize[2]/2+ports_d[2]/2+material/2, 0])
+        translate([0, -(caseSize[2]-ports_d[2]-material-sdCard_d[2])/2, 0])
+            #square([finger*17, ports_d[2]+material+sdCard_d[2]], center=true);
     }
     
 }
 
+//right();
+
 module front() {
     difference() {
         faceA(caseSize, finger, finger, material, 0);
-        // possibly make the opening 6 fingers wide 
-        //translate([piSize[0]/2-hifiRCA_d[0]/2-27.5, caseSize[2]/2-hifiRCA_d[2]/2-material/2])
         translate([0, caseSize[2]/2-hifiRCA_d[2]/2-material/2])
-            //#square([hifiRCA_d[0], hifiRCA_d[2]+material], center=true);
-            #square([finger*7, hifiRCA_d[2]+material], center=true);
+            #square([finger*9, hifiRCA_d[2]+material], center=true);
     }
 }
 
 //front();
+
+module back() {
+    difference() {
+        faceA(caseSize, finger, finger, material, 0);
+    }
+}
+
+module lid() {
+    difference() {
+        faceB(caseSize, finger, finger, material, 0);
+        translate([-brd_d[0]/2+header_d[0]/2+7, brd_d[1]/2-header_d[1]*1.5, 0])
+            square([header_d[0], header_d[1]], center=true);
+    }
+}
+
+
 
 module layout(threeD=true) {
   if (threeD) {
@@ -120,22 +138,34 @@ module layout(threeD=true) {
       rotate([90, 0, 0])
         linear_extrude(height=material, center=true)
         children(3);
+        
+    color("darkred")
+        translate([0, caseSize[1]/2-material/2, caseSize[2]/2-material/2])
+            rotate([90, 0, 0])
+                linear_extrude(height=material, center=true)
+                children(4);
     
-      
+    color("limegreen")
+        translate([0, 0, caseSize[2]-material])
+            rotate([0, 0, 0])
+                linear_extrude(height=material, center=true)
+                children(5);
+    
       translate([0, 0, material/2+sdCard_d[2]]) {
         pi3();    
         hifiberryDacPlus(withHeader=true);
+ 
     }
-
+  
   }
-}
 
+}
 
 layout() {
     base();
     left();
     right();
     front();
+    back();
+    lid();
 }
-
-
