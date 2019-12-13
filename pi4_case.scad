@@ -2,6 +2,7 @@
 //use </Users/aaronciuffo/Documents/Hobby/OpenSCAD/finger_joint_box/finger_joint_box.scad>
 use <finger_joint_box.scad>
 use <raspberrypi.scad>
+use <packing_circles.scad>
 
 
 material = 2.3;
@@ -40,6 +41,17 @@ module slots(slotD, area) {
     
 }
 
+
+module vent_holes(sizeX=100, sizeY=100, min_radius=5, max_radius=15, total_circles=10) {
+    circles = packing_circles([sizeX, sizeY], min_radius, max_radius, total_circles);
+    mr = max([for(c = circles) c[2]]);
+    translate([0, 0, mr]) for(c = circles) {
+        translate([c[0], c[1]])
+            sphere(c[2], $fn = 48);
+    }
+}
+
+//!vent_holes();
 
 module base() {
     union() {
