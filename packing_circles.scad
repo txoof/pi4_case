@@ -74,23 +74,26 @@ function maximum(a, i = 0) = (i < len(a) - 1) ? max(a[i], maximum(a, i +1)) : a[
 function minimum(a, i = 0) = (i < len(a) - 1) ? min(a[i], minimum(a, i +1)) : a[i];
 
 
-module pack_circles(sizeX=200, sizeY=200, min_radius=5, max_radius=8, density=0.4) {
-    
+module pack_circles(sizeX=200, sizeY=200, min_radius=5, max_radius=8, density=0.4, min_separation=1, center=false) {
     avg_circle = PI*pow(((min_radius+max_radius)/2), 2);
+    
+    trans_coord = center ? [-sizeX/2, -sizeY/2, 0] : [0, 0, 0];
     
     total_circles = ceil(((sizeX*sizeY)/avg_circle)*density );
     echo(total_circles);
 
     //max_radius = minimum([sizeX, sizeY])*.8;
-    circles = packing_circles([sizeX, sizeY], min_radius, max_radius, total_circles);
-    mr = max([for(c = circles) c[2]]); 
-    for(c = circles) {
-        translate([c[0], c[1]])
-            //sphere(c[2], $fn = 48);
-            circle(c[2], $fn=36);
+    translate(trans_coord) {
+        circles = packing_circles([sizeX, sizeY], min_radius, max_radius, total_circles);
+        mr = max([for(c = circles) c[2]]); 
+        for(c = circles) {
+            translate([c[0], c[1]])
+                //sphere(c[2], $fn = 48);
+                circle(c[2]-min_separation/2, $fn=36);
+        }
     }
 }
 
 
-//!echo((200*200)/(PI*pow((8+5)/2, 2)));
-pack_circles(min_radius=3, max_radius=8, density=0.2);
+
+pack_circles(min_radius=5, max_radius=10, min_separation=1.5, density=0.3);
