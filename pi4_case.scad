@@ -26,7 +26,7 @@ mountingHole = 2.9;
 sdCard_d = [15.7, 12.2, 1.6];
 
 //USB and Network Ports
-ports_d = [53, 55, 22];
+ports_d = [50, 55, 19];
 portsPwr_d = [53, 11.5, 7];
 
 //hifi berry dimensions
@@ -76,7 +76,7 @@ module base() {
 }
 
 module left() {
-    zMult = 1.5; // z height multiplyer for the sd card size
+    zMult = 1.2; // z height multiplyer for the sd card size
     difference() {
         echo("SD Card Slot height: ", sdCard_d[2]*zMult);
         faceC(caseSize, finger, finger, material);
@@ -102,15 +102,25 @@ module right() {
     //            #square([finger, ports_d[2]+material+sdCard_d[2]], center=true);
               
         }
+        translate([0, -caseSize[2]/2+material+5/2/2+ports_d[2], 0])
+            square([caseSize[1]-material*2, 5/2], center=true);
+        
+        translate([ports_d[0]/2+5/2, 0, 0])
+            square([5/2, caseSize[2]-material*2], center=true);
+        translate([-(ports_d[0]/2+5/2), 0, 0])
+            square([5/2, caseSize[2]-material*2], center=true);
+        /*
         difference() {
             translate([0, -caseSize[2]/2+ports_d[2]/2+material/2, 0])
                 square([usableDiv(maxDiv(caseSize, finger))[1]*finger+5, ports_d[2]+5], center=true);       
            translate([0, -caseSize[2]/2+ports_d[2]/2+material/2-2.5, 0])
                 square([usableDiv(maxDiv(caseSize, finger))[1]*finger, ports_d[2]+2.5], center=true);     
         }
+        */
     }
 }
 
+//!right();
 
 
 module front() {
@@ -266,7 +276,7 @@ module layout(threeD=true) {
 
 }
 
-layout(threeD=false) {
+layout(threeD=true) {
     base();
     left();
     right();
