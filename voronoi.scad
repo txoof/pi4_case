@@ -42,7 +42,7 @@ module my_random_voronoi(
     ymin=0;
     L = max(xsize,ysize);
     seed = seed == undef ? rands(0, 100, 1)[0] : seed;
-	echo("Seed", seed);
+	//echo("Seed", seed);
 
 	// Generate points.
 	x = rands(xmin, xsize, n, seed);
