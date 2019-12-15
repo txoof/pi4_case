@@ -2,7 +2,6 @@
 //use </Users/aaronciuffo/Documents/Hobby/OpenSCAD/finger_joint_box/finger_joint_box.scad>
 use <finger_joint_box.scad>
 use <raspberrypi.scad>
-use <packing_circles.scad>
 use <voronoi.scad>
 
 
