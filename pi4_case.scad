@@ -6,7 +6,7 @@ use <voronoi.scad>
 
 
 material = 4.0;
-over = 6;
+over = 10;
 finger = 5;
 lidFinger = finger*4;
 piSize = [85, 56, 28];
@@ -37,12 +37,12 @@ mountingHole = 2.9;
 sdCard_d = [15.7, 12.2, 1.4];
 
 //USB and Network Ports
-ports_d = [52.5, 55, 19.2];
-portsPwr_d = [53, 11.5, 8];
+ports_d = [55.5, 55, 21.2];
+portsPwr_d = [56, 11.5, 8];
 
 //hifi berry dimensions
 //RCA Jacks
-hifiRCA_d = [27.5, 9.5, 11];
+hifiRCA_d = [29, 9.5, 13];
 
 //header dimensions
 header_d = [52, 7.5, 8.5];
@@ -56,8 +56,6 @@ vor_thick=1;
 //cutout border to use around all cutout holes 
 cutout_border = 5;
 
-font = "Helvetica";
-
 module foot(w, h, ratio, center=false) {
     q = w - w*(1-ratio);
 
@@ -69,7 +67,6 @@ module foot(w, h, ratio, center=false) {
         polygon(coords);
     
 }
-
 
 
 module feet() {
@@ -162,7 +159,8 @@ module right() {
 module front() {
     RCA_z = 23.8;
     power_z = -(caseSize[2]/2-material*2-sdCard_d[2]-brd_d[2]);
-    power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole*2;
+//    power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole*1.5;//
+    power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole;
     union() {
         difference() {
             faceA(caseSize, finger, lidFinger, material, 0);
@@ -227,7 +225,7 @@ module back() {
 
 module lid() {
     header_x = -brd_d[0]/2+header_d[0]/2+6.5;
-    header_y = brd_d[1]/2-header_d[1]*1.1;
+    header_y = brd_d[1]/2-header_d[1]*1.15;
     
     union() { 
         difference() { // difference the lid from the voronoi
@@ -239,13 +237,7 @@ module lid() {
                 square([header_d[0], header_d[1]], center=true);
         }
  
-        // add the mounting holes with a border
-//        difference() {
-//                // add a larger border around the mounting hole
-//                mounting_holes(d=mountingHole+cutout_border);
-//                // cut out the mounting hole
-//                mounting_holes(d=mountingHole);
-//        }
+
         
         // add a border around the header hole
         difference(){
