@@ -5,12 +5,19 @@ use <raspberrypi.scad>
 use <voronoi.scad>
 
 
-material = 3.4;
+material = 4.0;
 over = 6;
 finger = 5;
+lidFinger = finger*4;
 piSize = [85, 56, 28];
+
+//radius of chamfers
+chamfer_r = 2;
 // add the overage and material thickness to the measured pi sizes
 caseSize = [ for (a = piSize) a + over + material*2 ];
+echo("///////////////////////////////////////////");
+echo("caseSize: ", caseSize);
+echo("///////////////////////////////////////////");
 
 // feet for the case
 foot_x = (caseSize[0]-usableDiv(maxDiv(caseSize, finger))[0]*finger)/2;
@@ -35,7 +42,7 @@ portsPwr_d = [53, 11.5, 8];
 
 //hifi berry dimensions
 //RCA Jacks
-hifiRCA_d = [27, 9.5, 11];
+hifiRCA_d = [27.5, 9.5, 11];
 
 //header dimensions
 header_d = [52, 7.5, 8.5];
@@ -49,6 +56,7 @@ vor_thick=1;
 //cutout border to use around all cutout holes 
 cutout_border = 5;
 
+font = "Helvetica";
 
 module foot(w, h, ratio, center=false) {
     q = w - w*(1-ratio);
@@ -85,9 +93,10 @@ module base() {
             // add mounting holes
             mounting_holes(mountingHole);
             my_random_voronoi(vor_d[0], vor_d[1], n=100, round=vor_round, thickness=vor_thick, center=true);
-            translate([caseSize[0]/2-material, (caseSize[1]/4), 0])
-                rotate([0, 180 , 90])
-                    text("Aaron Ciuffo https://github.com/txoof/pi4_case", size=material*.5, font="Anton");
+//            translate([caseSize[0]/2-material, caseSize[1]/2-material*2, 0])
+//                rotate([0, 180 , 90])
+//                resize([caseSize[1]-material*4, 0], auto=true)
+//                    text("Aaron Ciuffo https://github.com/txoof/pi4_case", size=material*.5, font=font, valign="center");
        }
        difference() {
            mounting_holes(d=mountingHole+cutout_border);
@@ -108,14 +117,14 @@ module base() {
 
 
 module left() {
-    zMult = 1.2; // z height multiplyer for the sd card size
+    zMult = 2.5; // z height multiplyer for the sd card size
     difference() {
         echo("SD Card Slot height: ", sdCard_d[2]*zMult);
-        faceC(caseSize, finger, finger, material);
+        faceC(caseSize, finger, lidFinger, material);
         my_random_voronoi(caseSize[1]-vor_border, caseSize[2]-vor_border, n=30, round=vor_round, thickness=vor_thick, center=true);
         // remove a slot for sd card access
         translate([0, -caseSize[2]/2 + (sdCard_d[2]*zMult + material)/2 , 0])
-            square([sdCard_d[0], sdCard_d[2]*zMult + material], center=true);
+            chamfer_square([sdCard_d[0], sdCard_d[2]*zMult + material], r=1, center=true);
     }
 }
 //!left();
@@ -123,7 +132,7 @@ module left() {
 module right() {
     union() {
         difference() {
-            faceC(caseSize, finger, finger, material);
+            faceC(caseSize, finger, lidFinger, material);
              my_random_voronoi(caseSize[1]-vor_border, caseSize[2]-vor_border, n=30, round=vor_round, thickness=vor_thick, center=true);
  
             // cut out space for usb, network port
@@ -139,7 +148,8 @@ module right() {
             translate([0, -(caseSize[2]/2-ports_d[2]/2-material), 0])
                 square([ports_d[0]+cutout_border, ports_d[2]+cutout_border], center=true);
             translate([0, -(caseSize[2]/2-ports_d[2]/2-material), 0])
-                square([ports_d[0], ports_d[2]], center=true);
+                chamfer_square([ports_d[0], ports_d[2]], r=chamfer_r, center=true);
+//                square([ports_d[0], ports_d[2]], center=true);
             translate([0, -(caseSize[2]/2), 0])
                 square([caseSize[1], material*2], center=true);
         }
@@ -150,12 +160,12 @@ module right() {
 
 
 module front() {
-    RCA_z = 23.5;
+    RCA_z = 23.8;
     power_z = -(caseSize[2]/2-material*2-sdCard_d[2]-brd_d[2]);
     power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole*2;
     union() {
         difference() {
-            faceA(caseSize, finger, finger, material, 0);
+            faceA(caseSize, finger, lidFinger, material, 0);
             my_random_voronoi(caseSize[0]-vor_border, caseSize[2]-vor_border, n=50, round=vor_round, thickness=vor_thick, center=true);
             translate([0, -caseSize[2]/2+material+RCA_z, 0])
                 square([hifiRCA_d[0], hifiRCA_d[2]], center=true);
@@ -168,17 +178,21 @@ module front() {
         
         difference() {
             translate([0, -caseSize[2]/2+material+RCA_z, 0])
-               square([hifiRCA_d[0]+cutout_border, hifiRCA_d[2]+cutout_border], center=true);
+                chamfer_square([hifiRCA_d[0]+cutout_border, hifiRCA_d[2]+cutout_border], r=2, center=true);
+//               square([hifiRCA_d[0]+cutout_border, hifiRCA_d[2]+cutout_border], center=true);
             translate([0, -caseSize[2]/2+material+RCA_z, 0])
-                square([hifiRCA_d[0], hifiRCA_d[2]], center=true);
+                chamfer_square([hifiRCA_d[0], hifiRCA_d[2]], r=chamfer_r, center=true);
+//                square([hifiRCA_d[0], hifiRCA_d[2]], center=true);
             
         } 
         //power, hdmi ports
         difference() {
             translate([power_x, power_z, 0])
-                square([portsPwr_d[0]+cutout_border, portsPwr_d[2]+cutout_border], center=true);
+                chamfer_square([portsPwr_d[0]+cutout_border, portsPwr_d[2]+cutout_border], r=chamfer_r, center=true);
+//                square([portsPwr_d[0]+cutout_border, portsPwr_d[2]+cutout_border], center=true);
             translate([power_x, power_z, 0])
-                square([portsPwr_d[0], portsPwr_d[2]], center=true);
+                chamfer_square([portsPwr_d[0], portsPwr_d[2]], r=chamfer_r, center=true);
+                //square([portsPwr_d[0], portsPwr_d[2]], center=true);
         }
         feet();
     }
@@ -197,7 +211,7 @@ module back() {
     
     union() {
         difference() {
-            faceA(caseSize, finger, finger, material, 0);
+            faceA(caseSize, finger, lidFinger, material, 0);
             my_random_voronoi(caseSize[0]-vor_border, caseSize[2]-vor_border, n=50, round=vor_round, thickness=vor_thick, center=true);
         }
         
@@ -217,28 +231,30 @@ module lid() {
     
     union() { 
         difference() { // difference the lid from the voronoi
-            faceB(caseSize, finger, finger, material, 0);
+            faceB(caseSize, finger, lidFinger, material, 0, lid=true);
             my_random_voronoi(caseSize[0]-vor_border, caseSize[1]-vor_border, n=100, round=vor_round, thickness=vor_thick, center=true);
-            mounting_holes(d=mountingHole);
+//            mounting_holes(d=mountingHole);
             //header holes
             translate([header_x, header_y, 0])
                 square([header_d[0], header_d[1]], center=true);
         }
  
         // add the mounting holes with a border
-        difference() {
-                // add a larger border around the mounting hole
-                mounting_holes(d=mountingHole+cutout_border);
-                // cut out the mounting hole
-                mounting_holes(d=mountingHole);
-        }
+//        difference() {
+//                // add a larger border around the mounting hole
+//                mounting_holes(d=mountingHole+cutout_border);
+//                // cut out the mounting hole
+//                mounting_holes(d=mountingHole);
+//        }
         
         // add a border around the header hole
         difference(){
             translate([header_x, header_y, 0])
-                square([header_d[0]+cutout_border, header_d[1]+cutout_border], center=true);     
+                chamfer_square([header_d[0]+cutout_border, header_d[1]+cutout_border], r=chamfer_r, center=true);
+//                square([header_d[0]+cutout_border, header_d[1]+cutout_border], center=true);            
             translate([header_x, header_y, 0])
-                square([header_d[0], header_d[1]], center=true); 
+                chamfer_square([header_d[0], header_d[1]], r=chamfer_r, center=true);            
+//                square([header_d[0], header_d[1]], center=true); 
             //make sure the mounting holes don't get filled back in by the border around the header hole
             mounting_holes(d=mountingHole);
         }
@@ -301,15 +317,20 @@ module layout(threeD=true) {
     }
   
   } else {
+      //Reference square 20x10
+      color("black")
+      translate([-caseSize[0]/2-material-20, caseSize[1]+20, 0])
+        square([20, 10], center = true);
+      
       color("green") translate([0, 0, 0])
         rotate([0, 180, 0])
         children(0);
       
-      color("blue") translate([-(caseSize[0]/2+caseSize[2]/2+material), -(caseSize[1]+material), 0])
+      color("blue") translate([-(caseSize[0]/2+caseSize[2]/2+material), -(caseSize[1]/2+material), 0])
         rotate([0, 0, 90])
         children(1);
       
-      color("darkblue") translate([-(caseSize[0]/2+caseSize[2]/2+material), 0, 0])
+      color("darkblue") translate([-(caseSize[0]/2+caseSize[2]/2+material), caseSize[1]/2+material, 0])
         rotate([0, 0, 90])
         children(2);
       
@@ -324,6 +345,17 @@ module layout(threeD=true) {
         children(5);
   }
 
+}
+
+module chamfer_square(dim, r, center=false, fn=36) {
+    $fn=fn;
+    myDim = [dim[0]-r*2, dim[1]-r*2];
+    trans_coord = center ? [-myDim[0]/2, -myDim[1]/2, 0] : [0, 0, 0];
+    translate(trans_coord)
+    minkowski() {
+        circle(r);
+        square(myDim);
+    }
 }
 
 layout(threeD=false) {
