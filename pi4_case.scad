@@ -50,11 +50,11 @@ header_d = [52, 7.5, 8.5];
 
 ///voronoi values 
 vor_round=1;
-vor_border=(5+material)*2;
-vor_thick=1;
+vor_border=(6+material)*2;
+vor_thick=.8;
 
 //cutout border to use around all cutout holes 
-cutout_border = 5;
+cutout_border = 4.5;
 
 module foot(w, h, ratio, center=false) {
     q = w - w*(1-ratio);
@@ -79,7 +79,16 @@ module feet() {
 }
 
 
-
+module chamfer_square(dim, r, center=false, fn=36) {
+    $fn=fn;
+    myDim = [dim[0]-r*2, dim[1]-r*2];
+    trans_coord = center ? [-myDim[0]/2, -myDim[1]/2, 0] : [0, 0, 0];
+    translate(trans_coord)
+    minkowski() {
+        circle(r);
+        square(myDim);
+    }
+}
 
 module base() {
     vor_d = [caseSize[0]-vor_border, caseSize[1]-vor_border];
@@ -339,16 +348,7 @@ module layout(threeD=true) {
 
 }
 
-module chamfer_square(dim, r, center=false, fn=36) {
-    $fn=fn;
-    myDim = [dim[0]-r*2, dim[1]-r*2];
-    trans_coord = center ? [-myDim[0]/2, -myDim[1]/2, 0] : [0, 0, 0];
-    translate(trans_coord)
-    minkowski() {
-        circle(r);
-        square(myDim);
-    }
-}
+
 
 layout(threeD=false) {
     base();
