@@ -10,7 +10,7 @@ module minsquare(mySize, rad) {
     minkowski() {
         square(minsize, center=true);
         translate([minsize[0]/2, minsize[1]/2])
-            circle(rad, center=true);
+            circle(rad);
     }
 }
 
