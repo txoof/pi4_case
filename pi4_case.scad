@@ -167,7 +167,7 @@ module right() {
 
 module front() {
     RCA_z = 23.8;
-    power_z = -(caseSize[2]/2-material*2-sdCard_d[2]-brd_d[2]);
+    power_z = -(caseSize[2]/2-material*2-sdCard_d[2]-brd_d[2])-1; //move hole down by 1mm to accomodate the thickness of the power connector housing
 //    power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole*1.5;//
     power_x = -brd_d[0]/2+portsPwr_d[0]/2+mountingHole;
     union() {
@@ -276,36 +276,39 @@ module mounting_holes(d=2.9) {
 
 module layout(threeD=true) {
   if (threeD) {
-    color("green") translate([0, 0, 0])
+ //   colors=["green", "blue", "darkblue", "red", "darkred", "brown"];
+    colors=["BurlyWood", "Wheat", "Wheat", "Goldenrod", "Goldenrod", "BurlyWood"];
+      
+    color(colors[0]) translate([0, 0, 0])
         linear_extrude(height=material, center=true)
         children(0);
     
-    color("blue") 
+    color(colors[1]) 
       translate([-caseSize[0]/2+material/2, 0, caseSize[2]/2-material/2]) 
       rotate([90, 0, -90])
         linear_extrude(height=material, center=true)
         children(1);
      
-    color("darkblue")
+    color(colors[2])
       translate([caseSize[0]/2-material/2, 0, caseSize[2]/2-material/2])
       rotate([90, 0, -90])
         linear_extrude(height=material, center=true)
         children(2);
 
 
-    color("red") 
+    color(colors[3]) 
       translate([0, -caseSize[1]/2+material/2, caseSize[2]/2-material/2])
       rotate([90, 0, 0])
         linear_extrude(height=material, center=true)
         children(3);
         
-    color("darkred")
+    color(colors[4])
         translate([0, caseSize[1]/2-material/2, caseSize[2]/2-material/2])
             rotate([90, 0, 0])
                 linear_extrude(height=material, center=true)
                 children(4);
     
-    color("brown")
+    color(colors[5])
         translate([0, 0, caseSize[2]-material])
             rotate([0, 0, 0])
                 linear_extrude(height=material, center=true)
