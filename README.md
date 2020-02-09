@@ -1,5 +1,5 @@
 # Raspberry Pi 3 & 4 Case
-A raspberry pi 3 and 4 case with space for a hat and access to the GPIO headers.
+A raspberry pi 3 and 4 case with room for a pi hat and access to the GPIO headers through the top.
 
 <img width="600" src="./pi_4_back.jpg">
 
