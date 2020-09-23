@@ -24,16 +24,18 @@ module back() {
 }
 
 module mounts() {
-    translate([-(mount[1]/2+2), -mount[0] ])
+    translate([-(mount[1]/2+2), 0])
         rotate([0, 0, 90])
         minsquare(mount, cornerRad/2);
-    translate([mount[1]/2+2, -mount[0]])
+    translate([mount[1]/2+2, 0])
         rotate([0, 0, 90])
         minsquare(mount, cornerRad/2);
 }
 
 back();
-mounts();
-
+translate([size[0]/2+mount[1]*1.5, mount[0]])
+    mounts();
+translate([size[0]/2+mount[1]*1.5, 0-5])
+    mounts();
 
 //minsquare([100, 50], 5);
