@@ -4,15 +4,36 @@ use <finger_joint_box.scad>
 use <raspberrypi.scad>
 use <voronoi.scad>
 
+/* [Display] */
+// False: SVG layout, True: 3D Visualization
+ThreeD = false;
 
+/* [Material and Design] */
+// average material thickness in mm
 material = 4.0;
+//overage buffer to add to the internal dimensions of the case
 over = 10;
-finger = 5;
+//finger joint width in mm
+finger = 5; 
+//finger joint width for the lid
 lidFinger = finger*4;
+
+/* [Look and Feel] */
+//radius of chamfers for curved edges
+chamfer_r = 2; //[0:.1:3]
+//voronoi void roudness
+vor_round=1;//[0.01:.01:1.5]
+//voronoi wall thickness
+vor_thick=.8;//[0.25:0.01:2]
+vor_border=(6+material)*2;
+//cutout border to use around all IO ports
+cutout_border = 4.5;//[0:.1:10]
+
+
+/* [Hidden] */
+//XYZ dimensions of raspberry pi
 piSize = [85, 56, 28];
 
-//radius of chamfers
-chamfer_r = 2;
 // add the overage and material thickness to the measured pi sizes
 caseSize = [ for (a = piSize) a + over + material*2 ];
 echo("///////////////////////////////////////////");
@@ -48,13 +69,8 @@ hifiRCA_d = [29, 9.5, 13];
 header_d = [52, 7.5, 8.5];
 
 
-///voronoi values 
-vor_round=1;
-vor_border=(6+material)*2;
-vor_thick=.8;
 
-//cutout border to use around all cutout holes 
-cutout_border = 4.5;
+
 
 module foot(w, h, ratio, center=false) {
     q = w - w*(1-ratio);
@@ -353,7 +369,7 @@ module layout(threeD=true) {
 
 
 
-layout(threeD=false) {
+layout(threeD=ThreeD) {
     base();
     left();
     right();
